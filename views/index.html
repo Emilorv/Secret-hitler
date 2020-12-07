@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <input id="navni" type="text" placeholder="Navn">
+        <input id="navna" type="button" value="Legg til navn">
+        <p id="dittnavn"></p>
+        <p id=WC></p>
+    </header>
+   <input type="button" value="Create Game" id="cg">
+   <input type="button" value="Join Game" id="jg">
+   <input type="text" placeholder="kode" id="jgi" style="visibility:hidden">
+    <script>
+        
+        let navni = document.getElementById("navni")
+        let navna = document.getElementById("navna")
+        let dittnavn = document.getElementById("dittnavn")
+        let cg = document.getElementById("cg")
+        let jg = document.getElementById("jg")
+        let jgi = document.getElementById("jgi")
+
+        let navn
+
+        navna.addEventListener("click", (e) => {
+            if (navni.value !==""){
+            navn = navni.value
+            dittnavn.innerHTML = `Ditt navn er: ${navni.value}`
+        }})
+
+        navni.addEventListener("keypress", e => {
+            if (e.key === 'Enter' && navni.value !==""){
+                navn = navni.value
+                dittnavn.innerHTML = `Ditt navn er: ${navni.value}`
+                navni.value=""
+            }
+        })
+
+        cg.addEventListener("click", ()=>{
+            if (navn !== undefined){
+                window.location.replace(`/lobby?navn=${navn}`)
+            }
+            else{
+                 dittnavn.innerHTML = `Skriv inn et navn`
+            }
+        })
+        jg.addEventListener("click", ()=>{
+            if (navn !== undefined){
+            jgi.style.visibility = "visible"
+                if(jgi.value && navn !==undefined){
+                    window.location.replace(`/lobby?code=${jgi.value}&navn=${navn}`)
+                }
+            }
+            else{
+                 dittnavn.innerHTML = `Skriv inn et navn`
+            }
+        })
+
+        jgi.addEventListener("keypress", e => {
+            if (e.key === 'Enter' && navn !==undefined){
+                if(jgi.value){
+                    window.location.replace(`/lobby?code=${jgi.value}&navn=${navn}`)
+                }
+                else{
+                 dittnavn.innerHTML = `Skriv inn et navn`
+            }
+            }
+        })
+
+if  (getUrlParam("dupe") ){
+    dittnavn.innerHTML = "Noen har allerede dette navnet"
+}
+if  (getUrlParam("wrongCode") ){
+    WC.innerHTML = "Det finnes ingen lobby med denne koden"
+}
+if  (getUrlParam("full") ){
+    WC.innerHTML = "Lobbyen er full"
+}
+function getUrlParam(parameter, defaultvalue) {
+    let urlparameter = defaultvalue;
+    if (window.location.href.indexOf(parameter) > -1) {
+        urlparameter = getUrlVars()[parameter];
+    }
+    return urlparameter;
+}
+
+function getUrlVars() {
+    let vars = {};
+    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+    </script>
+   
+</body>
+</html>

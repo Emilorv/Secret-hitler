@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/chat.css">
+    <title>Lobby</title>
+
+</head>
+
+<body>
+    <h3 id="nname">Navn:</h3>
+    <h3 id="code">KODE:</h3>
+
+    <div id="spillere">
+        <p>Spillere:</p>
+    </div>
+
+    <div class="box">
+        <div>Chat</div>
+        <div class="chatBox" id="chat-text">
+        </div>
+        <input id="chat-input" type="text">
+        <input id="sendbutton" class="btn" type="submit" value="Send">
+        <input type="button" value="Chat Clear" id="chatclear">
+    </div>
+
+    <div id="sgb">
+        <input type="button" value="START GAME" id="sg">
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/chat.js"></script>
+    <script>
+        let code = document.getElementById("code")
+        let nname = document.getElementById("nname")
+        let sg = document.getElementById("sg")
+
+        code.innerHTML = `KODE: ${getUrlParam("code")}`
+        nname.innerHTML = `Navn: ${navn}`
+
+        //Når noen forlater eller reloader tabben 
+        window.addEventListener('beforeunload', async e => {
+            let data = {
+                code: getUrlParam("code"),
+                id: id,
+                time: new Date().getTime(),
+                name: navn
+            }
+            socket.emit("leave", data)
+        })
+
+    </script>
+
+    <style>
+        #sgb {
+            width: fit-content;
+            margin: auto;
+            margin-top: 10%;
+        }
+    </style>
+</body>
+
+</html>

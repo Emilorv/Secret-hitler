@@ -1,0 +1,25 @@
+
+header {
+    margin: 20px;
+}
+
+.chatBox {
+   width: 400px;
+   height: 200px;
+    overflow: auto;
+}
+#chat-input{
+    width: 60%;
+    height: 30px;
+    margin: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.box{
+   position: absolute;
+   right: 0px;
+   bottom: 0px;
+   border-style: solid;
+   border-width: 1px;
+   border-color: black;
+}
