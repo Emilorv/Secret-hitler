@@ -10,6 +10,7 @@ const lobbies = new Enmap({
     name: "lobbies"
 })
 
+lobbies.clear()
 let htmlPath = path.join(__dirname, 'views');
 app.use(express.static(htmlPath));
 app.set('view engine', 'ejs')
@@ -18,16 +19,17 @@ app.use(express.json()) // for parsing application/json
 
 app.get("/lobby", (req, res) => {
     let code = req.query.code
-    let name = req.query.navn
+    let name = req.query.name
 
     if (!code) {
         code = makekey(5)
         let lobbyObj = {
             players: [],
-            messages: []
+            messages: [],
+            ingame: false
         }
         lobbies.set(code, lobbyObj)
-        res.redirect(`/lobby?code=${code}&navn=${name}`)
+        res.redirect(`/lobby?code=${code}&name=${name}`)
     } else {
         if (!lobbies.has(code)) {
             return res.redirect("/?wrongCode=true")
@@ -47,6 +49,8 @@ app.get("/lobby", (req, res) => {
             res.render("lobby.html")
         } else if (lobby.players.length >= 10) {
             res.redirect("/?full=true")
+        } else if (lobby.ingame) {
+            res.redirect("/?ingame=true")
         } else {
             let dupe = false
             lobby.players.forEach(p => {
@@ -72,9 +76,17 @@ app.get("/lobby", (req, res) => {
     }
 })
 
+app.get("/game", (req, res) => {
+    let lobby = lobbies.get(req.query.code)
+    lobby.ingame = true
+    lobbies.set(req.query.code, lobby)
+    res.render("game.html")
+})
 
 io.on('connection', (socket) => {
+    let start
     socket.on("leave", data => {
+        if (start) return
         let lobby = lobbies.get(data.code)
         lobby.players.splice(data.id, 1)
         lobby.messages.push({
@@ -99,7 +111,7 @@ io.on('connection', (socket) => {
         socket.to(data.code).emit("message", {
             navn: data.name,
             message: `joined the lobby!<hr>`,
-            time: data.time
+            time: new Date().getTime()
         })
         socket.to(data.code).emit("newPlayer", {
             navn: data.name,
@@ -110,9 +122,17 @@ io.on('connection', (socket) => {
 
     socket.on("message", msg => {
         let lobby = lobbies.get(msg.code)
+        msg.time = new Date().getTime()
         lobby.messages.push(msg)
         lobbies.set(msg.code, lobby)
         io.to(msg.code).emit("message", msg)
+        console.log(lobbies)
+    })
+
+    socket.on("start", code => {
+        start = true
+        lobbies.get(code).ingame = true
+        io.to(code).emit("start")
     })
 });
 

@@ -32,12 +32,37 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/chat.js"></script>
     <script>
+        let playersE = document.getElementById("spillere")
         let code = document.getElementById("code")
-        let nname = document.getElementById("nname")
+        let nameE = document.getElementById("nname")
         let sg = document.getElementById("sg")
 
-        code.innerHTML = `KODE: ${getUrlParam("code")}`
-        nname.innerHTML = `Navn: ${navn}`
+        code.innerHTML = `CODE: ${getUrlParam("code")}`
+        nameE.innerHTML = `Name: ${navn}`
+
+        setTimeout(() => {
+            players.forEach(player => {
+                playersE.innerHTML += `<ul> ${player.navn} </ul>`
+            })
+        }, 500)
+
+        socket.on("newPlayer", player => {
+            if (scrolled) {
+                players.innerHTML += `<ul> ${player.navn} </ul>`
+            } else {
+                players.innerHTML += `<ul> ${player.navn} </ul>`
+                scrolled = false
+            }
+        })
+
+        socket.on("left", player => {
+            if (scrolled) {
+                players.innerHTML = players.innerHTML.replace(`<ul> ${player.navn} </ul>`, '')
+            } else {
+                players.innerHTML = players.innerHTML.replace(`<ul> ${player.navn} </ul>`, '')
+                scrolled = false
+            }
+        })
 
         //Når noen forlater eller reloader tabben 
         window.addEventListener('beforeunload', async e => {
@@ -50,6 +75,15 @@
             socket.emit("leave", data)
         })
 
+        sg.addEventListener("click", e => {
+            if (players.length >= 1) {
+                socket.emit("start", getUrlParam("code"))
+            }
+        })
+
+        socket.on("start", () => {
+            window.location.replace(`/game?code=${getUrlParam("code")}&name=${navn}`)
+        })
     </script>
 
     <style>

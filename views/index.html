@@ -1,22 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #23272A;
+            color: white;
+        }
+
+        #content {
+            width: fit-content;
+            margin: auto;
+            margin-top: 20%;
+        }
+    </style>
 </head>
+
 <body>
-    <header>
-        <input id="navni" type="text" placeholder="Navn">
+    <div id="content">
+
+
+        <input id="navni" type="text" placeholder="Name">
         <input id="navna" type="button" value="Legg til navn">
         <p id="dittnavn"></p>
         <p id=WC></p>
-    </header>
-   <input type="button" value="Create Game" id="cg">
-   <input type="button" value="Join Game" id="jg">
-   <input type="text" placeholder="kode" id="jgi" style="visibility:hidden">
+        <div id="Valg">
+            <input type="button" value="Create Game" id="cg" class="b">
+            <input type="button" value="Join Game" id="jg">
+            <input type="text" placeholder="kode" id="jgi" style="visibility:hidden">
+        </div>
+    </div>
     <script>
-        
         let navni = document.getElementById("navni")
         let navna = document.getElementById("navna")
         let dittnavn = document.getElementById("dittnavn")
@@ -27,76 +46,78 @@
         let navn
 
         navna.addEventListener("click", (e) => {
-            if (navni.value !==""){
-            navn = navni.value
-            dittnavn.innerHTML = `Ditt navn er: ${navni.value}`
-        }})
-
-        navni.addEventListener("keypress", e => {
-            if (e.key === 'Enter' && navni.value !==""){
+            if (navni.value !== "") {
                 navn = navni.value
                 dittnavn.innerHTML = `Ditt navn er: ${navni.value}`
-                navni.value=""
             }
         })
 
-        cg.addEventListener("click", ()=>{
-            if (navn !== undefined){
-                window.location.replace(`/lobby?navn=${navn}`)
-            }
-            else{
-                 dittnavn.innerHTML = `Skriv inn et navn`
+        navni.addEventListener("keypress", e => {
+            if (e.key === 'Enter' && navni.value !== "") {
+                navn = navni.value
+                dittnavn.innerHTML = `Ditt navn er: ${navni.value}`
+                navni.value = ""
             }
         })
-        jg.addEventListener("click", ()=>{
-            if (navn !== undefined){
-            jgi.style.visibility = "visible"
-                if(jgi.value && navn !==undefined){
-                    window.location.replace(`/lobby?code=${jgi.value}&navn=${navn}`)
-                }
+
+        cg.addEventListener("click", () => {
+            if (navn.value !== "" || navn !== undefined) {
+                window.location.replace(`/lobby?name=${navn}`)
+            } else {
+                dittnavn.innerHTML = `Skriv inn et navn`
             }
-            else{
-                 dittnavn.innerHTML = `Skriv inn et navn`
+        })
+        jg.addEventListener("click", () => {
+            if (navn !== undefined) {
+                jgi.style.visibility = "visible"
+                if (jgi.value && navn !== undefined) {
+                    window.location.replace(`/lobby?code=${jgi.value}&name=${navn}`)
+                }
+            } else {
+                dittnavn.innerHTML = `Skriv inn et navn`
             }
         })
 
         jgi.addEventListener("keypress", e => {
-            if (e.key === 'Enter' && navn !==undefined){
-                if(jgi.value){
-                    window.location.replace(`/lobby?code=${jgi.value}&navn=${navn}`)
+            if (e.key === 'Enter' && navn !== undefined) {
+                if (jgi.value) {
+                    window.location.replace(`/lobby?code=${jgi.value}&name=${navn}`)
+                } else {
+                    dittnavn.innerHTML = `Skriv inn et navn`
                 }
-                else{
-                 dittnavn.innerHTML = `Skriv inn et navn`
-            }
             }
         })
 
-if  (getUrlParam("dupe") ){
-    dittnavn.innerHTML = "Noen har allerede dette navnet"
-}
-if  (getUrlParam("wrongCode") ){
-    WC.innerHTML = "Det finnes ingen lobby med denne koden"
-}
-if  (getUrlParam("full") ){
-    WC.innerHTML = "Lobbyen er full"
-}
-function getUrlParam(parameter, defaultvalue) {
-    let urlparameter = defaultvalue;
-    if (window.location.href.indexOf(parameter) > -1) {
-        urlparameter = getUrlVars()[parameter];
-    }
-    return urlparameter;
-}
+        if (getUrlParam("dupe")) {
+            dittnavn.innerHTML = "Someone in the lobby stole your name!"
+        }
+        if (getUrlParam("wrongCode")) {
+            WC.innerHTML = "This lobby doesen't exist!"
+        }
+        if (getUrlParam("full")) {
+            WC.innerHTML = "This lobby is full!"
+        }
+        if (getUrlParam("ingame")) {
+            WC.innerHTML = "This game already started!"
+        }
 
-function getUrlVars() {
-    let vars = {};
-    let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
-        vars[key] = value;
-    });
-    return vars;
-}
+        function getUrlParam(parameter, defaultvalue) {
+            let urlparameter = defaultvalue;
+            if (window.location.href.indexOf(parameter) > -1) {
+                urlparameter = getUrlVars()[parameter];
+            }
+            return urlparameter;
+        }
 
+        function getUrlVars() {
+            let vars = {};
+            let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                vars[key] = value;
+            });
+            return vars;
+        }
     </script>
-   
+
 </body>
+
 </html>
