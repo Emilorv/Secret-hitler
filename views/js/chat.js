@@ -67,10 +67,21 @@ sendbutton.addEventListener("click", (e) => {
 })
 
 
+//Når noen forlater eller reloader tabben 
+window.addEventListener('beforeunload', async e => {
+    let data = {
+        code: getUrlParam("code"),
+        id: id,
+        time: new Date().getTime(),
+        name: navn
+    }
+    socket.emit("leave", data)
+})
+
 function send(message, navn) {
     socket.emit("message", {
         navn: navn,
-        message: message,
+        message: message.replace(/</g, "&").replace(/>/g, "&"),
         code: getUrlParam("code")
     })
 }

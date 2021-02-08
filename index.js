@@ -10,7 +10,6 @@ const lobbies = new Enmap({
     name: "lobbies"
 })
 
-lobbies.clear()
 let htmlPath = path.join(__dirname, 'views');
 app.use(express.static(htmlPath));
 app.set('view engine', 'ejs')
@@ -126,7 +125,6 @@ io.on('connection', (socket) => {
         lobby.messages.push(msg)
         lobbies.set(msg.code, lobby)
         io.to(msg.code).emit("message", msg)
-        console.log(lobbies)
     })
 
     socket.on("start", code => {

@@ -64,17 +64,6 @@
             }
         })
 
-        //Når noen forlater eller reloader tabben 
-        window.addEventListener('beforeunload', async e => {
-            let data = {
-                code: getUrlParam("code"),
-                id: id,
-                time: new Date().getTime(),
-                name: navn
-            }
-            socket.emit("leave", data)
-        })
-
         sg.addEventListener("click", e => {
             if (players.length >= 1) {
                 socket.emit("start", getUrlParam("code"))
