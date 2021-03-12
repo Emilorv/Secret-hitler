@@ -116,7 +116,6 @@ io.on('connection', (socket) => {
             navn: data.name,
             id: lobbies.get(data.code).players.length
         })
-
     })
 
     socket.on("message", msg => {
